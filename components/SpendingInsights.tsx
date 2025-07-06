@@ -12,13 +12,13 @@ interface SpendingInsightsProps {
 
 export default function SpendingInsights({ transactions, budgets }: SpendingInsightsProps) {
   const currentMonth = getCurrentMonth();
-  
+
   const insights = React.useMemo(() => {
-    const currentMonthTransactions = transactions.filter(t => 
+    const currentMonthTransactions = transactions.filter(t =>
       t.date.startsWith(currentMonth)
     );
     const currentMonthBudgets = budgets.filter(b => b.month === currentMonth);
-    
+
     const expensesByCategory = currentMonthTransactions
       .filter(t => t.type === 'expense')
       .reduce((acc, t) => {
@@ -42,7 +42,6 @@ export default function SpendingInsights({ transactions, budgets }: SpendingInsi
       .sort(([,a], [,b]) => b - a)[0];
 
     const averageDailySpending = totalExpenses / new Date().getDate();
-    
     const projectedMonthlySpending = averageDailySpending * 30;
 
     return {
@@ -60,87 +59,98 @@ export default function SpendingInsights({ transactions, budgets }: SpendingInsi
   }, [transactions, budgets, currentMonth]);
 
   return (
-    <Card>
+    <Card className="glass-card">
       <CardHeader>
-        <CardTitle>Spending Insights</CardTitle>
+        <CardTitle className="text-white">Spending Insights</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="p-4 border rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="h-4 w-4 text-blue-600" />
-              <h3 className="font-medium">Budget Utilization</h3>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="h-4 w-4 text-blue-400" />
+              <span className="text-sm text-slate-300">Budget Utilization</span>
             </div>
-            <p className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-white">
               {insights.budgetUtilization.toFixed(1)}%
-            </p>
-            <p className="text-sm text-muted-foreground">
+            </div>
+            <div className="text-sm text-slate-400">
               {formatCurrency(insights.totalExpenses)} of {formatCurrency(insights.totalBudget)}
-            </p>
+            </div>
           </div>
 
-          <div className="p-4 border rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingDown className="h-4 w-4 text-green-600" />
-              <h3 className="font-medium">Daily Average</h3>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <TrendingDown className="h-4 w-4 text-green-400" />
+              <span className="text-sm text-slate-300">Daily Average</span>
             </div>
-            <p className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-white">
               {formatCurrency(insights.averageDailySpending)}
-            </p>
-            <p className="text-sm text-muted-foreground">
+            </div>
+            <div className="text-sm text-slate-400">
               Projected: {formatCurrency(insights.projectedMonthlySpending)}
-            </p>
+            </div>
           </div>
         </div>
 
         {insights.topSpendingCategory && (
-          <div className="p-4 border rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="h-4 w-4 text-purple-600" />
-              <h3 className="font-medium">Top Spending Category</h3>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <CheckCircle className="h-4 w-4 text-purple-400" />
+              <span className="text-sm text-slate-300">Top Spending Category</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-medium">{insights.topSpendingCategory.name}</span>
-              <Badge variant="secondary">
+              <span className="text-lg font-semibold text-white">
+                {insights.topSpendingCategory.name}
+              </span>
+              <span className="text-lg font-bold text-white">
                 {formatCurrency(insights.topSpendingCategory.amount)}
-              </Badge>
+              </span>
             </div>
           </div>
         )}
 
         {insights.overBudgetCategories.length > 0 && (
-          <div className="p-4 border rounded-lg border-red-200 bg-red-50">
-            <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
-              <h3 className="font-medium text-red-800">Over Budget Categories</h3>
-            </div>
-            <div className="space-y-2">
-              {insights.overBudgetCategories.map((category) => (
-                <div key={category.category} className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{category.category}</span>
-                  <Badge variant="destructive">
-                    +{formatCurrency(category.overspent)}
-                  </Badge>
-                </div>
-              ))}
+          <div className="space-y-3">
+            <div className="bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-500/30 rounded-lg p-4 backdrop-blur-sm">
+              <div className="flex items-center space-x-2 mb-3">
+                <AlertTriangle className="h-5 w-5 text-red-400" />
+                <span className="text-red-300 font-medium">Over Budget Categories</span>
+              </div>
+              <div className="space-y-2">
+                {insights.overBudgetCategories.map((category) => (
+                  <div key={category.category} className="flex items-center justify-between bg-red-900/20 rounded-md p-2">
+                    <span className="text-red-200 font-medium">{category.category}</span>
+                    <Badge variant="destructive" className="bg-red-600/80 text-red-100">
+                      +{formatCurrency(category.overspent)}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        <div className="grid gap-2 text-sm">
-          <div className="flex justify-between">
-            <span>Budget Remaining:</span>
-            <span className={insights.totalBudget - insights.totalExpenses >= 0 ? 'text-green-600' : 'text-red-600'}>
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700">
+          <div className="text-center">
+            <div className="text-sm text-slate-400">Budget Remaining:</div>
+            <div className={`text-lg font-bold ${insights.totalBudget - insights.totalExpenses >= 0 ? 'text-green-400' : 'text-red-400'}`}>
               {formatCurrency(insights.totalBudget - insights.totalExpenses)}
-            </span>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span>Categories with Budget:</span>
-            <span>{budgets.filter(b => b.month === currentMonth).length}</span>
+          <div className="text-center">
+            <div className="text-sm text-slate-400">Categories with Budget:</div>
+            <div className="text-lg font-bold text-white">
+              {budgets.filter(b => b.month === currentMonth).length}
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span>Over Budget Categories:</span>
-            <span className="text-red-600">{insights.overBudgetCategories.length}</span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4">
+          <div className="text-center">
+            <div className="text-sm text-slate-400">Over Budget Categories:</div>
+            <div className="text-lg font-bold text-red-400">
+              {insights.overBudgetCategories.length}
+            </div>
           </div>
         </div>
       </CardContent>
