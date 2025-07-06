@@ -8,12 +8,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-blue-600 to-purple-600 text-primary-foreground hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl",
-        destructive: "bg-gradient-to-r from-red-500 to-pink-600 text-destructive-foreground hover:from-red-600 hover:to-pink-700 shadow-lg hover:shadow-xl",
-        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground hover:border-primary/50 shadow-sm hover:shadow-md",
-        secondary: "bg-gradient-to-r from-gray-100 to-gray-200 text-secondary-foreground hover:from-gray-200 hover:to-gray-300 shadow-sm hover:shadow-md",
-        ghost: "hover:bg-accent hover:text-accent-foreground hover:shadow-sm",
-        link: "text-primary underline-offset-4 hover:underline hover:text-primary/80",
+        default: "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl",
+        destructive: "bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700 shadow-lg hover:shadow-xl",
+        outline: "border border-slate-600 bg-transparent hover:bg-slate-800 hover:text-white text-slate-300 hover:border-blue-500",
+        secondary: "bg-gradient-to-r from-slate-700 to-slate-800 text-white hover:from-slate-600 hover:to-slate-700 shadow-sm hover:shadow-md",
+        ghost: "hover:bg-slate-800 hover:text-white text-slate-300",
+        link: "text-blue-400 underline-offset-4 hover:underline hover:text-blue-300",
       },
       size: {
         default: "h-10 px-4 py-2",

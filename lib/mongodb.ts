@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/personal-finance';
+const uri = process.env.MONGODB_URI || 'mongodb+srv://pooja:12345@personal-finance-visual.mxhyek7.mongodb.net/?retryWrites=true&w=majority&appName=personal-finance-visualizer';
 const options = {};
 
 let client: MongoClient;

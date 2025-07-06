@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Transaction } from '@/lib/types';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { Edit, Trash2, AlertCircle } from 'lucide-react';
+import { Edit, Trash2, Target, Music, Utensils, RefreshCw } from 'lucide-react';
 import EditTransactionDialog from './EditTransactionDialog';
 
 interface TransactionListProps {
@@ -12,6 +12,16 @@ interface TransactionListProps {
   onUpdate: (transaction: Transaction) => void;
   onDelete: (id: string) => void;
 }
+
+const getCategoryIcon = (category: string) => {
+  const icons: Record<string, any> = {
+    'Shopping': Target,
+    'Subscriptions': Music,
+    'Food': Utensils,
+    'Transfer': RefreshCw
+  };
+  return icons[category] || Target;
+};
 
 export default function TransactionList({ transactions, onUpdate, onDelete }: TransactionListProps) {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -28,7 +38,6 @@ export default function TransactionList({ transactions, onUpdate, onDelete }: Tr
         const response = await fetch(`/api/transactions/${id}`, {
           method: 'DELETE'
         });
-        
         if (response.ok) {
           onDelete(id);
         }
@@ -40,69 +49,64 @@ export default function TransactionList({ transactions, onUpdate, onDelete }: Tr
 
   if (transactions.length === 0) {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-8">
-          <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground text-center">
-            No transactions found. Add your first transaction to get started!
-          </p>
-        </CardContent>
-      </Card>
+      <div className="text-center py-8">
+        <p className="text-slate-400">No transactions found. Add your first transaction to get started!</p>
+      </div>
     );
   }
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {transactions.map((transaction) => (
-              <div
-                key={transaction._id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-medium">{transaction.description}</h3>
-                    <Badge variant={transaction.type === 'income' ? 'default' : 'secondary'}>
-                      {transaction.category}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {formatDate(transaction.date)}
-                  </p>
+      <div className="space-y-4">
+        {transactions.map((transaction) => {
+          const IconComponent = getCategoryIcon(transaction.category);
+          
+          return (
+            <div
+              key={transaction._id}
+              className="transaction-item p-4 rounded-lg flex items-center justify-between"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600">
+                  <IconComponent className="h-5 w-5 text-white" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`font-semibold ${
-                    transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                  </span>
-                  <div className="flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleEdit(transaction)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleDelete(transaction._id!)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                <div>
+                  <p className="font-medium text-white">{transaction.description}</p>
+                  <p className="text-sm text-slate-400">{transaction.category}</p>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              
+              <div className="flex items-center space-x-4">
+                <div className="text-right">
+                  <p className={`font-semibold ${transaction.type === 'income' ? 'text-green-400' : 'text-white'}`}>
+                    {transaction.type === 'income' ? '+' : ''}{formatCurrency(transaction.amount)}
+                  </p>
+                  <p className="text-sm text-slate-400">{formatDate(transaction.date)}</p>
+                </div>
+                
+                <div className="flex space-x-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleEdit(transaction)}
+                    className="text-slate-400 hover:text-white"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleDelete(transaction._id!)}
+                    className="text-slate-400 hover:text-red-400"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
       <EditTransactionDialog
         transaction={editingTransaction}
