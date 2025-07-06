@@ -26,14 +26,6 @@ interface CustomTooltipProps {
   }>;
 }
 
-interface CustomLegendProps {
-  payload?: Array<{
-    value: string;
-    color?: string;
-    payload?: CategoryData;
-  }>;
-}
-
 export default function CategoryPieChart({ transactions }: CategoryPieChartProps) {
   const categoryData = React.useMemo(() => {
     const categoryExpenses: Record<string, number> = {};
@@ -70,23 +62,27 @@ export default function CategoryPieChart({ transactions }: CategoryPieChartProps
     return null;
   };
 
-  const CustomLegend: React.FC<CustomLegendProps> = ({ payload }) => {
+  const renderCustomLegend = (props: any) => {
+    const { payload } = props;
     if (!payload) return null;
 
     return (
-      <div className="flex flex-wrap justify-center gap-4 mt-4">
-        {payload.map((entry, index) => (
-          <div key={index} className="flex items-center space-x-2">
+      <div className="flex flex-wrap justify-center gap-3 mt-4">
+        {payload.map((entry: any, index: number) => (
+          <div 
+            key={index} 
+            className="flex items-center space-x-2 bg-slate-800/40 backdrop-blur-sm rounded-lg px-3 py-2 border border-slate-600/30 hover:bg-slate-700/50 transition-all duration-200"
+          >
             <div 
-              className="w-3 h-3 rounded-full"
+              className="w-3 h-3 rounded-full border border-slate-500/50 shadow-sm"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-slate-300 text-sm">{entry.value}</span>
-            {entry.payload && (
-              <span className="text-slate-400 text-sm">
-                {formatCurrency(entry.payload.amount)}
-              </span>
-            )}
+            <span className="text-slate-200 text-sm font-medium">
+              {entry.value}
+            </span>
+            <span className="text-slate-400 text-xs">
+              ({formatCurrency(entry.payload?.amount || 0)})
+            </span>
           </div>
         ))}
       </div>
@@ -102,23 +98,23 @@ export default function CategoryPieChart({ transactions }: CategoryPieChartProps
   }
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={350}>
       <PieChart>
         <defs>
           {MODERN_COLORS.map((color, index) => (
             <linearGradient key={index} id={`gradient${index}`} x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity={0.8}/>
-              <stop offset="100%" stopColor={color} stopOpacity={0.6}/>
+              <stop offset="0%" stopColor={color} stopOpacity={0.9}/>
+              <stop offset="100%" stopColor={color} stopOpacity={0.7}/>
             </linearGradient>
           ))}
         </defs>
         <Pie
           data={categoryData}
           cx="50%"
-          cy="50%"
+          cy="45%"
           labelLine={false}
           label={({ percentage }) => `${percentage}%`}
-          outerRadius={80}
+          outerRadius={90}
           fill="#8884d8"
           dataKey="amount"
           animationBegin={0}
@@ -127,12 +123,15 @@ export default function CategoryPieChart({ transactions }: CategoryPieChartProps
           {categoryData.map((entry, index) => (
             <Cell 
               key={`cell-${index}`} 
-              fill={`url(#gradient${index % MODERN_COLORS.length})`}
+              fill={MODERN_COLORS[index % MODERN_COLORS.length]}
             />
           ))}
         </Pie>
         <Tooltip content={<CustomTooltip />} />
-        <Legend content={<CustomLegend />} />
+        <Legend 
+          content={renderCustomLegend}
+          wrapperStyle={{ paddingTop: '20px' }}
+        />
       </PieChart>
     </ResponsiveContainer>
   );
