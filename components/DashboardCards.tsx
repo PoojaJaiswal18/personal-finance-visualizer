@@ -38,26 +38,25 @@ export default function DashboardCards({ transactions }: DashboardCardsProps) {
       title: "Total Balance",
       value: stats.balance,
       icon: Wallet,
-      gradient: "from-blue-500 to-blue-600",
-      highlight: true
+      gradient: "from-blue-500 to-blue-600"
     },
     {
       title: "Income",
       value: stats.totalIncome,
       icon: TrendingUp,
-      gradient: "from-gray-600 to-gray-700"
+      gradient: "from-green-500 to-green-600"
     },
     {
       title: "Expenses",
       value: stats.totalExpenses,
       icon: TrendingDown,
-      gradient: "from-gray-600 to-gray-700"
+      gradient: "from-red-500 to-red-600"
     },
     {
       title: "Predictions",
       value: stats.balance * 1.12,
       icon: Target,
-      gradient: "from-gray-600 to-gray-700"
+      gradient: "from-purple-500 to-purple-600"
     }
   ];
 
@@ -69,7 +68,7 @@ export default function DashboardCards({ transactions }: DashboardCardsProps) {
         return (
           <Card 
             key={card.title}
-            className={`metric-card ${card.highlight ? 'gradient-border' : ''} relative overflow-hidden`}
+            className="metric-card hover-highlight-card relative overflow-hidden"
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-300">
